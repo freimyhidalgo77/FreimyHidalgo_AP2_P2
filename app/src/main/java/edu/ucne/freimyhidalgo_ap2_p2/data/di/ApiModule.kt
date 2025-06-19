@@ -16,7 +16,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object ApiModule {
 
-    private const val BASE_URL_Retenciones = " https://api.github.com/users/enelramon/repos/"
+    private const val BASE_URL_Repository = "https://api.github.com/"
 
     @Provides
     @Singleton
@@ -29,7 +29,7 @@ object ApiModule {
     @Singleton
     fun providesRepositoryManagerApi(moshi: Moshi): RepositoryManajerApi {
         return Retrofit.Builder()
-            .baseUrl(BASE_URL_Retenciones)
+            .baseUrl(BASE_URL_Repository)
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
             .create(RepositoryManajerApi::class.java)
