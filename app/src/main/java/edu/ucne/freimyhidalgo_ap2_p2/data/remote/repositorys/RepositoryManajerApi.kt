@@ -9,7 +9,5 @@ import retrofit2.http.Path
 interface RepositoryManajerApi {
 
     @GET("users/{username}/repos")
-    fun listRepos(@Path("username") username: String): List<RepositoryDTO>
-
-
+    suspend fun listRepos(@Path("username") username: String): List<RepositoryDTO>
 }
