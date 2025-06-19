@@ -96,7 +96,7 @@ fun RepositoryListBodyScreen(
     var find by remember { mutableStateOf("") }
 
     val filtrarRepository = uiState.repository.filter {
-        it.description!!.contains(find, ignoreCase = true)
+        it.description?.contains(find, ignoreCase = true) == true
 
     }
 
@@ -238,7 +238,7 @@ fun RepositoryRow(
                             append("Description: ")
                         }
                         withStyle(style = SpanStyle(fontWeight = FontWeight.Normal)) {
-                            append(repository.description)
+                            append(repository.description ?: "Sin descripción")
                         }
                     },
                     fontSize = 18.sp,
@@ -251,7 +251,7 @@ fun RepositoryRow(
                             append("Html URL: ")
                         }
                         withStyle(style = SpanStyle(fontWeight = FontWeight.Normal)) {
-                            append(repository.htmlUrl)
+                            append(repository.htmlUrl ?: "No disponible")
                         }
                     },
                     fontSize = 18.sp,
