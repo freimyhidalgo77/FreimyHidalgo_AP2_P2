@@ -13,7 +13,7 @@ import javax.inject.Inject
 class RepositoryRepository @Inject constructor(
     private val dataSource: RepositoryDataSource
 ){
-    fun getRetenciones(username:String): Flow<Resource<List<RepositoryDTO>>> = flow {
+    fun getRepository(username:String): Flow<Resource<List<RepositoryDTO>>> = flow {
         try{
             emit(Resource.Loading())
             val repository = dataSource.getRepository(username)
@@ -29,4 +29,28 @@ class RepositoryRepository @Inject constructor(
         }
     }
 
-}
+
+    suspend fun createRepository(
+        repositoryDTO: RepositoryDTO
+    ): Resource<RepositoryDTO> = try {
+        val result = dataSource.postRepository(repositoryDTO)
+        Resource.Success(result)
+    } catch (e: Exception) {
+        Resource.Error(e.message ?: "Error al crear el repositorio")
+    }
+
+    suspend fun updateRepository(
+        username: String,
+        repositoryDTO: RepositoryDTO,
+    ): Resource<RepositoryDTO> = try {
+        val result = dataSource.putRepository(username,repositoryDTO)
+        Resource.Success(result)
+    } catch (e: Exception) {
+        Resource.Error(e.message ?: "Error al actualizar el repositorio")
+    }
+
+    suspend fun delete(username:String, repos:String)  = dataSource.deleteRepository(username, repos)
+
+
+    }
+
