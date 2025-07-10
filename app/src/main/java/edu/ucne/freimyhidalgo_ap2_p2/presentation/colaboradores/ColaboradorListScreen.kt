@@ -11,10 +11,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -56,13 +59,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun ColaboradorListScreen(
-    drawerState: DrawerState,
-    scope: CoroutineScope,
-    goToColaborators: (String) -> Unit,
-    createRepository: () -> Unit,
+    onBack: () -> Unit,
+    owner: String,
+    repo: String,
     viewModel: ColaboradorViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -70,24 +72,19 @@ fun ColaboradorListScreen(
     var lastretentionCount by remember { mutableStateOf(0) }
 
     LaunchedEffect(Unit) {
-        viewModel.getContributor("")
+        viewModel.OnEvent(ColaboradorEvent.GetContributors("$owner/$repo"))
     }
 
-    LaunchedEffect(uiState.colaboradors) {
-        if (uiState.colaboradors.size > lastretentionCount) {
-            Toast.makeText(context, ": ${uiState.colaboradors.lastOrNull()?.login}", Toast.LENGTH_LONG).show()
-        }
-        lastretentionCount = uiState.colaboradors.size
-    }
 
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = uiState.isLoading,
+        onRefresh = { viewModel.OnEvent(ColaboradorEvent.GetContributors("$owner/$repo")) }
+    )
 
     ColaboradorListBodyScreen(
-        drawerState = drawerState,
-        scope = scope,
         uiState = uiState,
         reloadRepository = { viewModel.getContributor("enelramon") },
-        goToColaborators,
-        createRepository,
+        onBack = onBack,
         viewModel = viewModel
     )
 }
@@ -95,17 +92,15 @@ fun ColaboradorListScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ColaboradorListBodyScreen(
-    drawerState: DrawerState,
-    scope: CoroutineScope,
+    onBack: () -> Unit,
     uiState: ColaboradorUiState,
     reloadRepository: () -> Unit,
-    goToColaborators: (String) -> Unit,
-    createRepository: () -> Unit,
     viewModel: ColaboradorViewModel
 
 ) {
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
-    val searchResults by viewModel.searchResults.collectAsStateWithLifecycle()
+    val colaboradores = uiState.colaboradors
+
 
     Scaffold(
         topBar = {
@@ -120,14 +115,12 @@ fun ColaboradorListBodyScreen(
                         )
                     )
                 },
-                navigationIcon = {
-                    IconButton(onClick = { scope.launch { drawerState.open() } }) {}
-                },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.secondary
                 )
             )
         },
+
         floatingActionButton = {
             Box(
                 contentAlignment = Alignment.BottomEnd,
@@ -158,7 +151,7 @@ fun ColaboradorListBodyScreen(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    items(searchResults) { colaborador ->
+                    items(colaboradores) { colaborador ->
                         ColaboradorRow(colaborador)
                     }
                 }
@@ -169,11 +162,8 @@ fun ColaboradorListBodyScreen(
 
 @Composable
 fun ColaboradorRow(
-    colaborador:ColaboradorDTO,
-
-    ) {
-    var expanded by remember { mutableStateOf(false) }
-
+    colaborador: ColaboradorDTO
+) {
     Card(
         shape = MaterialTheme.shapes.medium,
         modifier = Modifier
@@ -187,44 +177,48 @@ fun ColaboradorRow(
                 .fillMaxWidth()
                 .padding(16.dp)
                 .background(MaterialTheme.colorScheme.surfaceVariant),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            // Avatar con inicial del login
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .size(48.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
+                        shape = MaterialTheme.shapes.small
+                    )
+            ) {
+                Text(
+                    text = colaborador.login.firstOrNull()?.uppercase() ?: "?",
+                    style = TextStyle(
+                        color = Color.White,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+            }
+
+            // Datos del colaborador
             Column(
-                modifier = Modifier.weight(5f),
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = buildAnnotatedString {
-                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                            append("Login: ")
-                        }
-                        withStyle(style = SpanStyle(fontWeight = FontWeight.Normal)) {
-                            append(colaborador.login)
-                        }
-                    },
+                    text = colaborador.login,
                     fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
 
                 Text(
-                    text = buildAnnotatedString {
-                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                            append("Id: ")
-                        }
-                        withStyle(style = SpanStyle(fontWeight = FontWeight.Normal)) {
-                            append(colaborador.contributions.toString())
-                        }
-                    },
-                    fontSize = 18.sp,
-                    color = MaterialTheme.colorScheme.onSurface
+                    text = "Contribuciones: ${colaborador.contributions}",
+                    fontSize = 16.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-
             }
         }
+    }
+}
 
-
-        }
-
-     }
 
 
