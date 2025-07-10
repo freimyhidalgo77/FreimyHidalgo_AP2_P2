@@ -18,7 +18,7 @@ interface RepositoryManajerApi {
     suspend fun listRepos(@Path("username") username: String): List<RepositoryDTO>
 
     @GET("repos/{owner}/{repo}/contributors")
-    suspend fun listContributors(
+    suspend fun listColaborators(
         @Path("owner") owner: String,
         @Path("repo") repo: String
     ): List<ColaboradorDTO>
