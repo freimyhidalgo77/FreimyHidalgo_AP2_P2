@@ -2,6 +2,7 @@ package edu.ucne.freimyhidalgo_ap2_p2.presentation.repositoryy
 
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -49,6 +50,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import edu.ucne.freimyhidalgo_ap2_p2.data.remote.dto.RepositoryDTO
+import edu.ucne.freimyhidalgo_ap2_p2.presentation.navegation.Screen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -59,6 +61,7 @@ import kotlinx.coroutines.launch
 fun RepositoryListScreen(
     drawerState: DrawerState,
     scope: CoroutineScope,
+    goToContributors: (String, String) -> Unit,
     goToRepository: (String) -> Unit,
     createRepository: () -> Unit,
     viewModel: RepositoryViewModel = hiltViewModel()
@@ -85,6 +88,7 @@ fun RepositoryListScreen(
         uiState = uiState,
         reloadRepository = { viewModel.getRepository("enelramon") },
         goToRepository,
+        goToContributors = goToContributors,
         createRepository,
         viewModel = viewModel
     )
@@ -98,6 +102,7 @@ fun RepositoryListBodyScreen(
     uiState: RepositoryUIState,
     reloadRepository: () -> Unit,
     goToRepository: (String) -> Unit,
+    goToContributors: (String, String) -> Unit,
     createRepository: () -> Unit,
     viewModel: RepositoryViewModel
 
@@ -179,7 +184,16 @@ fun RepositoryListBodyScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     items(searchResults) { repository ->
-                        RepositoryRow(repository, goToRepository)
+                        RepositoryRow(
+                            repository = repository,
+                            goToRepository = goToRepository,
+                            goToColaboradores = { owner, repo ->
+                                goToContributors(owner, repo)
+                            },
+                            onViewContributors = {
+                                goToContributors("enelramon", repository.name)
+                            }
+                        )
                     }
                 }
             }
@@ -196,9 +210,11 @@ fun RepositoryListBodyScreen(
 @Composable
 fun RepositoryRow(
     repository: RepositoryDTO,
-    goToRepository: (String) -> Unit
+    goToRepository: (String) -> Unit,
+    goToColaboradores: (owner: String, repo: String) -> Unit,
+    onViewContributors: () -> Unit
 
-    ) {
+) {
     var expanded by remember { mutableStateOf(false) }
 
     Card(
@@ -245,6 +261,19 @@ fun RepositoryRow(
                     fontSize = 18.sp,
                     color = MaterialTheme.colorScheme.onSurface
                 )
+
+                Text(
+                    text = "Ver colaboradores",
+                    color = Color(0xFF0A84FF),
+                    modifier = Modifier
+                        .padding(top = 8.dp)
+                        .clickable {
+                            goToColaboradores("enelramon", repository.name)
+
+                        }
+                )
+
+
 
                 Text(
                     text = buildAnnotatedString {
