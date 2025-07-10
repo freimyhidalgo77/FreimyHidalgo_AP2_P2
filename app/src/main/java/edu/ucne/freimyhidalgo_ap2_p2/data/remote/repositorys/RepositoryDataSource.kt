@@ -10,7 +10,7 @@ class RepositoryDataSource  @Inject constructor(
 ) {
     suspend fun getRepository(username: String) = repositoryManagerApi.listRepos(username)
 
-    suspend fun getContributors(owner: String, repo: String) =
-        repositoryManagerApi.listContributors(owner, repo)
+    suspend fun getConlaborators(owner: String, repo: String) =
+        repositoryManagerApi.listColaborators(owner, repo)
 
 }
