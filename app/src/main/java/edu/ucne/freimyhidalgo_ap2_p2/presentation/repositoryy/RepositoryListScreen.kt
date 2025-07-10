@@ -59,11 +59,11 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RepositoryListScreen(
+    createRepository: () -> Unit,
     drawerState: DrawerState,
     scope: CoroutineScope,
     goToContributors: (String, String) -> Unit,
     goToRepository: (String) -> Unit,
-    createRepository: () -> Unit,
     viewModel: RepositoryViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -74,12 +74,12 @@ fun RepositoryListScreen(
         viewModel.getRepository("enelramon")
     }
 
-    LaunchedEffect(uiState.repository) {
+    /*LaunchedEffect(uiState.repository) {
         if (uiState.repository.size > lastretentionCount) {
             Toast.makeText(context, "Nuevo repository: ${uiState.repository.lastOrNull()?.description}", Toast.LENGTH_LONG).show()
         }
         lastretentionCount = uiState.repository.size
-    }
+    }*/
 
 
     RepositoryListBodyScreen(
@@ -145,7 +145,7 @@ fun RepositoryListBodyScreen(
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = Color.White
                 ) {
-                    Icon(Icons.Filled.Refresh, contentDescription = "Recargar Repository")
+                    Icon(Icons.Filled.Refresh, contentDescription = "Reload Repository")
                 }
             }
         }
@@ -171,7 +171,7 @@ fun RepositoryListBodyScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "No se han encontrado repositorios",
+                        text = "No se han encontrado repositorios!",
                         style = TextStyle(
                             fontSize = 18.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -255,24 +255,12 @@ fun RepositoryRow(
                             append("Description: ")
                         }
                         withStyle(style = SpanStyle(fontWeight = FontWeight.Normal)) {
-                            append(repository.description ?: "Sin descripción")
+                            append(repository.description ?: "Sin descripcion!")
                         }
                     },
                     fontSize = 18.sp,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-
-                Text(
-                    text = "Ver colaboradores",
-                    color = Color(0xFF0A84FF),
-                    modifier = Modifier
-                        .padding(top = 8.dp)
-                        .clickable {
-                            goToColaboradores("enelramon", repository.name)
-
-                        }
-                )
-
 
 
                 Text(
@@ -287,6 +275,19 @@ fun RepositoryRow(
                     fontSize = 18.sp,
                     color = MaterialTheme.colorScheme.onSurface
                 )
+
+
+                Text(
+                    text = "Ver colaboradores",
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .padding(top = 8.dp)
+                        .clickable {
+                            goToColaboradores("enelramon", repository.name)
+
+                        }
+                )
+
             }
         }
     }
