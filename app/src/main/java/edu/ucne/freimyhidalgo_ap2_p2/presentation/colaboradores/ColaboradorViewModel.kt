@@ -6,7 +6,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import edu.ucne.freimyhidalgo_ap2_p2.data.remote.dto.ColaboradorDTO
 import edu.ucne.freimyhidalgo_ap2_p2.data.remote.dto.RepositoryDTO
 import edu.ucne.freimyhidalgo_ap2_p2.data.remote.repositorys.Resource
-import edu.ucne.freimyhidalgo_ap2_p2.data.repository.ColaboradorRepository
 import edu.ucne.freimyhidalgo_ap2_p2.data.repository.RepositoryRepository
 import edu.ucne.freimyhidalgo_ap2_p2.presentation.repositoryy.RepositoryEvent
 import edu.ucne.freimyhidalgo_ap2_p2.presentation.repositoryy.RepositoryUIState
@@ -44,6 +43,13 @@ class ColaboradorViewModel @Inject constructor(
     fun setSearchQuery(query: String) {
         _searchQuery.value = query
     }
+
+    fun OnEvent(event: ColaboradorEvent){
+        when(event){
+            is ColaboradorEvent.GetContributors -> getContributor(event.repoPath)
+        }
+    }
+
 
     fun getContributor(repoPath: String) {
         val parts = repoPath.split("/")
