@@ -10,11 +10,12 @@ sealed class Screen{
     @Serializable
     data object RepositoryList: Screen()
 
+
     @Serializable
     data class Colaborador(val Id: Int?): Screen()
 
     @Serializable
-    data object ColaboradorList: Screen()
+    data class ColaboradorList(val owner: String, val repo: String): Screen()
 
 
 
