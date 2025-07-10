@@ -14,35 +14,25 @@ import javax.inject.Inject
 class RepositoryRepository @Inject constructor(
     private val dataSource: RepositoryDataSource
 ){
-    fun getRepository(username:String): Flow<Resource<List<RepositoryDTO>>> = flow {
-        try{
-            emit(Resource.Loading())
-            val repository = dataSource.getRepository(username)
-            emit(Resource.Success(repository))
-        }catch (e: HttpException){
-            val errorMessage = e.response()?.errorBody()?.string() ?: e.message()
-            Log.e("RepositoryRepository", "HttpException: $errorMessage")
-            emit(Resource.Error("Error de conexion $errorMessage"))
-        }catch (e: Exception){
-            Log.e("RepositoryRepository", "Exception: ${e.message}")
-            emit(Resource.Error("Error: ${e.message}"))
-
+    suspend fun getRepositories(username: String): Flow<Resource<List<RepositoryDTO>>> = flow {
+        emit(Resource.Loading())
+        try {
+            val repositories = dataSource.getRepository(username)
+            emit(Resource.Success(repositories))
+        } catch (e: Exception) {
+            emit(Resource.Error("Error al obtener repositorios: ${e.message}"))
         }
     }
-
 
     suspend fun getContributors(owner: String, repo: String): Flow<Resource<List<ColaboradorDTO>>> = flow {
         emit(Resource.Loading())
         try {
-            val contributors = dataSource.listColaboradores(owner, repo)
+            val contributors = dataSource.getContributors(owner, repo)
             emit(Resource.Success(contributors))
         } catch (e: Exception) {
-            emit(Resource.Error("Error al obtener contribuidores: ${e.message}"))
+            emit(Resource.Error("Error al obtener colaboradores: ${e.message}"))
         }
     }
-
-
-
 
 
     }
