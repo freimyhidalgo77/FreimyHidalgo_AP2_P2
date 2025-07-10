@@ -46,7 +46,7 @@ class ColaboradorViewModel @Inject constructor(
 
     fun OnEvent(event: ColaboradorEvent){
         when(event){
-            is ColaboradorEvent.GetContributors -> getContributor(event.repoPath)
+            is ColaboradorEvent.GetColaboratorEvent -> getContributor(event.repoPath)
         }
     }
 
@@ -62,7 +62,7 @@ class ColaboradorViewModel @Inject constructor(
 
         val (owner, repo) = parts
         viewModelScope.launch {
-            colaboradorRepository.getContributors(owner, repo).collectLatest { resource ->
+            colaboradorRepository.getColaborators(owner, repo).collectLatest { resource ->
                 when (resource) {
                     is Resource.Loading -> {
                         _uiState.update { it.copy(isLoading = true) }
@@ -88,7 +88,6 @@ class ColaboradorViewModel @Inject constructor(
             }
         }
     }
-
 
     fun on_SearchQuery(query: String) {
         _searchQuery.value = query
