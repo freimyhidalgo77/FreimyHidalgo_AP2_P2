@@ -20,20 +20,19 @@ class RepositoryRepository @Inject constructor(
             val repositories = dataSource.getRepository(username)
             emit(Resource.Success(repositories))
         } catch (e: Exception) {
-            emit(Resource.Error("Error al obtener repositorios: ${e.message}"))
+            emit(Resource.Error("Error al obtener los repositorios: ${e.message}"))
         }
     }
 
-    suspend fun getContributors(owner: String, repo: String): Flow<Resource<List<ColaboradorDTO>>> = flow {
+    suspend fun getColaborators(owner: String, repo: String): Flow<Resource<List<ColaboradorDTO>>> = flow {
         emit(Resource.Loading())
         try {
-            val contributors = dataSource.getContributors(owner, repo)
+            val contributors = dataSource.getConlaborators(owner, repo)
             emit(Resource.Success(contributors))
         } catch (e: Exception) {
-            emit(Resource.Error("Error al obtener colaboradores: ${e.message}"))
+            emit(Resource.Error("Error al obtener los colaboradores: ${e.message}"))
         }
-    }
-
+        }
 
     }
 
