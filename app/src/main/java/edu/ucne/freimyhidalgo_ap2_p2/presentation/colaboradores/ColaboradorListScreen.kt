@@ -72,13 +72,13 @@ fun ColaboradorListScreen(
     var lastretentionCount by remember { mutableStateOf(0) }
 
     LaunchedEffect(Unit) {
-        viewModel.OnEvent(ColaboradorEvent.GetContributors("$owner/$repo"))
+        viewModel.OnEvent(ColaboradorEvent.GetColaboratorEvent("$owner/$repo"))
     }
 
 
-    val pullRefreshState = rememberPullRefreshState(
+    val fresh = rememberPullRefreshState(
         refreshing = uiState.isLoading,
-        onRefresh = { viewModel.OnEvent(ColaboradorEvent.GetContributors("$owner/$repo")) }
+        onRefresh = { viewModel.OnEvent(ColaboradorEvent.GetColaboratorEvent("$owner/$repo")) }
     )
 
     ColaboradorListBodyScreen(
@@ -199,7 +199,6 @@ fun ColaboradorRow(
                 )
             }
 
-            // Datos del colaborador
             Column(
                 verticalArrangement = Arrangement.Center
             ) {
