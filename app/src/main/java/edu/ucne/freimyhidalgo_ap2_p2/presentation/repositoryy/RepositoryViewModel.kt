@@ -78,7 +78,7 @@ class RepositoryViewModel @Inject constructor(
 
     fun getRepository(username:String) {
         viewModelScope.launch {
-            repositoryRepository.getRepository(username).collectLatest { getting ->
+            repositoryRepository.getRepositories(username).collectLatest { getting ->
                 when (getting) {
                     is Resource.Loading -> {
                         _uiState.update { it.copy(isLoading = true) }
