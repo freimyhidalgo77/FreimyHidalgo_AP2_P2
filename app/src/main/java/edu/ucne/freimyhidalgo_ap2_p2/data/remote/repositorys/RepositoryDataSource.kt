@@ -9,4 +9,13 @@ class RepositoryDataSource  @Inject constructor(
 ) {
     suspend fun getRepository(username:String) = repositoryManagerApi.listRepos(username)
 
+    suspend fun postRepository(repositoryDTO: RepositoryDTO) = repositoryManagerApi.createRepo(repositoryDTO)
+
+    suspend fun putRepository(username: String, repositoryDTO: RepositoryDTO) = repositoryManagerApi.updateRepo(username, repositoryDTO)
+
+    suspend fun deleteRepository(username: String, repos: String) = repositoryManagerApi.deleteRepo(username, repos)
+
+
+
+
 }
