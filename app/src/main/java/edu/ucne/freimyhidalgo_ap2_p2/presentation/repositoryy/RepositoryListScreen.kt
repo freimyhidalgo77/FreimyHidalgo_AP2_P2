@@ -27,6 +27,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -58,6 +59,8 @@ import kotlinx.coroutines.launch
 fun RepositoryListScreen(
     drawerState: DrawerState,
     scope: CoroutineScope,
+    goToRepository: (String) -> Unit,
+    createRepository: () -> Unit,
     viewModel: RepositoryViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -65,7 +68,7 @@ fun RepositoryListScreen(
     var lastretentionCount by remember { mutableStateOf(0) }
 
     LaunchedEffect(Unit) {
-        viewModel.getRepository("Eminence")
+        viewModel.getRepository("enelramon")
     }
 
     LaunchedEffect(uiState.repository) {
@@ -80,7 +83,10 @@ fun RepositoryListScreen(
         drawerState = drawerState,
         scope = scope,
         uiState = uiState,
-        reloadRepository = { viewModel.getRepository("Eminence") },
+        reloadRepository = { viewModel.getRepository("enelramon") },
+        goToRepository,
+        createRepository,
+        viewModel = viewModel
     )
 }
 
@@ -91,14 +97,13 @@ fun RepositoryListBodyScreen(
     scope: CoroutineScope,
     uiState: RepositoryUIState,
     reloadRepository: () -> Unit,
+    goToRepository: (String) -> Unit,
+    createRepository: () -> Unit,
+    viewModel: RepositoryViewModel
 
 ) {
-    var find by remember { mutableStateOf("") }
-
-    val filtrarRepository = uiState.repository.filter {
-        it.description?.contains(find, ignoreCase = true) == true
-
-    }
+    val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
+    val searchResults by viewModel.searchResults.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -114,16 +119,13 @@ fun RepositoryListBodyScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { scope.launch { drawerState.open() } }) {
-
-                    }
+                    IconButton(onClick = { scope.launch { drawerState.open() } }) {}
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color(0xFF0D47A1)
+                    containerColor = MaterialTheme.colorScheme.secondary
                 )
             )
         },
-
         floatingActionButton = {
             Box(
                 contentAlignment = Alignment.BottomEnd,
@@ -140,64 +142,63 @@ fun RepositoryListBodyScreen(
                 ) {
                     Icon(Icons.Filled.Refresh, contentDescription = "Recargar Repository")
                 }
-
             }
         }
     ) { paddingValues ->
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxSize()
-            ) {
+            TextField(
+                value = searchQuery,
+                onValueChange = { viewModel.setSearchQuery(it) },
+                label = { Text("Buscar repositorio") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp)
+            )
 
-                if (filtrarRepository.isEmpty() && !uiState.isLoading) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(top = 32.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "No se han encontrado repositorios",
-                            style = TextStyle(
-                                fontSize = 18.sp,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+            if (searchResults.isEmpty() && !uiState.isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "No se han encontrado repositorios",
+                        style = TextStyle(
+                            fontSize = 18.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                    }
-                } else {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        items(filtrarRepository) { reposotory ->
-                            RepositoryRow(reposotory)
-                        }
+                    )
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    items(searchResults) { repository ->
+                        RepositoryRow(repository)
                     }
                 }
-
             }
 
             if (uiState.isLoading) {
                 CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
             }
         }
     }
 }
 
-
 @Composable
 fun RepositoryRow(
     repository: RepositoryDTO,
+    //goToRepository: (String) -> Unit
 
-) {
+    ) {
     var expanded by remember { mutableStateOf(false) }
 
     Card(
