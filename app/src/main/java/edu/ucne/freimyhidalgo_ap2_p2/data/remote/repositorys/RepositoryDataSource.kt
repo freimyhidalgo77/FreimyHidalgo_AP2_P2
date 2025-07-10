@@ -1,10 +1,12 @@
 package edu.ucne.freimyhidalgo_ap2_p2.data.remote.repositorys
 
+import edu.ucne.freimyhidalgo_ap2_p2.data.remote.colaboradores.ColaboradoresManagerApi
 import edu.ucne.freimyhidalgo_ap2_p2.data.remote.dto.RepositoryDTO
 import javax.inject.Inject
 
 class RepositoryDataSource  @Inject constructor(
-    private val repositoryManagerApi: RepositoryManajerApi
+    private val repositoryManagerApi: RepositoryManajerApi,
+    private val colab: ColaboradoresManagerApi
 
 ) {
     suspend fun getRepository(username:String) = repositoryManagerApi.listRepos(username)
@@ -15,6 +17,8 @@ class RepositoryDataSource  @Inject constructor(
 
     suspend fun deleteRepository(username: String, repos: String) = repositoryManagerApi.deleteRepo(username, repos)
 
+    suspend fun listColaboradores(owner: String, repo: String) =
+        colab.listContributors(owner,repo)
 
 
 

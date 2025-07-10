@@ -37,7 +37,7 @@ fun HostNavigation(
         }
 
 
-   /* composable<Screen.RepositoryList> {
+    composable<Screen.RepositoryList> {
         ColaboradorListScreen(
             goToColaborators = { id ->
                 navHostController.navigate(Screen.Colaborador(null))
@@ -48,10 +48,7 @@ fun HostNavigation(
             drawerState = drawerState,
             scope = scope
         )
-    }*/
+    }
 }
-
-
-
 
 }

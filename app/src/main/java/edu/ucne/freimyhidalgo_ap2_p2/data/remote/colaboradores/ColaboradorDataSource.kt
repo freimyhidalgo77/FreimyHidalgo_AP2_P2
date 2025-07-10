@@ -10,16 +10,9 @@ import javax.inject.Inject
 class ColaboradorDataSource  @Inject constructor(
     private val repositoryManagerApi: ColaboradoresManagerApi
 ) {
-    suspend fun getColaborador(colaborador: String) = repositoryManagerApi.listColab(colaborador)
+    suspend fun getColaborador(repo: String, owner:String) = repositoryManagerApi.listColab(repo, owner)
 
-    suspend fun postColaborador(colaboradorDTO: ColaboradorDTO) =
-        repositoryManagerApi.createColab(colaboradorDTO)
 
-    suspend fun putColaborador(colaborador: String, colaboradorDTO: ColaboradorDTO) =
-        repositoryManagerApi.updateColab(colaborador, colaboradorDTO)
-
-    suspend fun deleteColaborador(colaborador: String) =
-        repositoryManagerApi.deleteRepo(colaborador)
 
 }
 

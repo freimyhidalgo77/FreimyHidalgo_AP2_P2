@@ -73,7 +73,7 @@ fun RepositoryListScreen(
 
     LaunchedEffect(uiState.repository) {
         if (uiState.repository.size > lastretentionCount) {
-            Toast.makeText(context, "Nueva repository: ${uiState.repository.lastOrNull()?.description}", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "Nuevo repository: ${uiState.repository.lastOrNull()?.description}", Toast.LENGTH_LONG).show()
         }
         lastretentionCount = uiState.repository.size
     }
@@ -179,7 +179,7 @@ fun RepositoryListBodyScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     items(searchResults) { repository ->
-                        RepositoryRow(repository)
+                        RepositoryRow(repository, goToRepository)
                     }
                 }
             }
@@ -196,7 +196,7 @@ fun RepositoryListBodyScreen(
 @Composable
 fun RepositoryRow(
     repository: RepositoryDTO,
-    //goToRepository: (String) -> Unit
+    goToRepository: (String) -> Unit
 
     ) {
     var expanded by remember { mutableStateOf(false) }

@@ -25,7 +25,7 @@ import kotlin.math.log
 
 @HiltViewModel
 class ColaboradorViewModel @Inject constructor(
-    private val colaboradorRepository: ColaboradorRepository
+    private val colaboradorRepository: RepositoryRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ColaboradorUiState())
@@ -40,57 +40,43 @@ class ColaboradorViewModel @Inject constructor(
     private val _searchResults = MutableStateFlow<List<ColaboradorDTO>>(emptyList())
     val searchResults: StateFlow<List<ColaboradorDTO>> = _searchResults.asStateFlow()
 
-    init {
-        getColaboradores("enelramon")
-        viewModelScope.launch {
-            _searchQuery
-                .debounce(600)
-                .distinctUntilChanged()
-                .mapLatest { query ->
-                }
-                .collectLatest { filtrado ->
-                    //_searchResults.value = filtrado
-                }
-        }
-    }
 
     fun setSearchQuery(query: String) {
         _searchQuery.value = query
     }
 
-
-    fun OnEvent(event: RepositoryEvent){
-        when(event){
-            RepositoryEvent.DeleteRepositories -> TODO()
-            RepositoryEvent.GetRepositories -> getColaboradores("enelramon")
-            RepositoryEvent.PostRepository -> TODO()
-            RepositoryEvent.PutRepositories -> TODO()
+    fun getContributor(repoPath: String) {
+        val parts = repoPath.split("/")
+        if (parts.size < 2) {
+            _uiState.update {
+                it.copy(errorMessage = "Ruta del repositorio inválida: $repoPath")
+            }
+            return
         }
-    }
 
-
-    fun getColaboradores(colaborador:String) {
+        val (owner, repo) = parts
         viewModelScope.launch {
-            colaboradorRepository.getColaborador(colaborador).collectLatest { getting ->
-                when (getting) {
+            colaboradorRepository.getContributors(owner, repo).collectLatest { resource ->
+                when (resource) {
                     is Resource.Loading -> {
                         _uiState.update { it.copy(isLoading = true) }
                     }
                     is Resource.Success -> {
                         _uiState.update {
                             it.copy(
-                                colaboradors = getting.data ?: emptyList(),
-                                isLoading = false
+                                colaboradors = resource.data ?: emptyList(),
+                                isLoading = false,
+                                errorMessage = null
                             )
                         }
                     }
                     is Resource.Error -> {
                         _uiState.update {
                             it.copy(
-                                isLoading = false
+                                isLoading = false,
+                                errorMessage = resource.message
                             )
                         }
-
                     }
                 }
             }
@@ -103,22 +89,10 @@ class ColaboradorViewModel @Inject constructor(
     }
 
 
-
-    private fun loadColab(login: String) {
-        viewModelScope.launch {
-            val colab = _uiState.value.colaboradors.find { it.login == login }
-            _uiState.update {
-                it.copy(
-                    login = colab?.login ?: "",
-                    Id = colab?.id!!,
-                    html_url = colab?.html_url?: "",
-                    avatar_url = colab?.avatar_url?:""
-                )
-            }
-        }
-    }
-
 }
+
+
+
 
 
 

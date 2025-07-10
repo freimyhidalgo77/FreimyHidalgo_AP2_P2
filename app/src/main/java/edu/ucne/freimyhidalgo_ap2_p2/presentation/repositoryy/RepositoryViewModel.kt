@@ -107,80 +107,10 @@ class RepositoryViewModel @Inject constructor(
     }
 
 
-    private fun save() {
-        viewModelScope.launch {
-            _loading.value = true
-            val request = RepositoryDTO(
-                name = uiState.value.name,
-                description = uiState.value.descripcion,
-                htmlUrl = uiState.value.html_url
-
-            )
-            try {
-                repositoryRepository.createRepository(request)
-                _uiState.update {
-                    it.copy(
-                        isLoading = false
-                    )
-                }
-                getRepository("freimyhidalgo77")
-            } catch (e: Exception) {
-                _uiState.update {
-                    it.copy(
-                        errorMessage = "Error al guardar: ${e.message}",
-                        isLoading = false
-                    )
-                }
-            }
-        }
-    }
-
-    fun update(repositoryDTO: RepositoryDTO) {
-        viewModelScope.launch {
-            val request = RepositoryDTO(
-                name = uiState.value.name,
-                description = uiState.value.descripcion,
-                htmlUrl = uiState.value.html_url
-
-            )
-            try {
-                repositoryRepository.updateRepository("freimyhidalgo77",repositoryDTO)
-
-                getRepository("freimyhidalgo77")
-            } catch (e: Exception) {
-                _uiState.update {
-                    it.copy(errorMessage = "Error al actualizar el repo: ${e.message}")
-                }
-            }
-
-        }
-    }
 
 
-    fun delete(repoName: String) {
-        viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
-            try {
-                repositoryRepository.delete("freimyhidalgo77", repoName,)
 
-                _uiState.update {
-                    it.copy(
-                        isLoading = false,
 
-                    )
-                }
-                getRepository("freimyhidalgo77")
-
-            } catch (e: Exception) {
-                _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        errorMessage = "Error al eliminar: ${e.message ?: "Error desconocido"}"
-                    )
-                }
-            }
-        }
-    }
 
     fun on_SearchQuery(query: String) {
         _searchQuery.value = query

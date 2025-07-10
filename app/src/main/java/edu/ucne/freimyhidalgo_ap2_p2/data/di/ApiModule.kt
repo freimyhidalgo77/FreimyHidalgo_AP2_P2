@@ -6,6 +6,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import edu.ucne.freimyhidalgo_ap2_p2.data.remote.colaboradores.ColaboradoresManagerApi
+import edu.ucne.freimyhidalgo_ap2_p2.data.remote.dto.ColaboradorDTO
 import edu.ucne.freimyhidalgo_ap2_p2.data.remote.dto.RepositoryDTO
 import edu.ucne.freimyhidalgo_ap2_p2.data.remote.repositorys.RepositoryManajerApi
 import retrofit2.Retrofit
@@ -34,5 +36,17 @@ object ApiModule {
             .build()
             .create(RepositoryManajerApi::class.java)
     }
+
+
+    @Provides
+    @Singleton
+    fun providesColaboradorManagerApi(moshi: Moshi): ColaboradoresManagerApi {
+        return Retrofit.Builder()
+            .baseUrl(BASE_URL_Repository)
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .build()
+            .create(ColaboradoresManagerApi::class.java)
+    }
+
 
 }

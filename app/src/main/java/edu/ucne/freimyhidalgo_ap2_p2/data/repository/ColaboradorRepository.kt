@@ -15,10 +15,10 @@ import javax.inject.Inject
 class ColaboradorRepository @Inject constructor(
     private val dataSource: ColaboradorDataSource
 ){
-    fun getColaborador(owner:String): Flow<Resource<List<ColaboradorDTO>>> = flow {
+    fun getColaborador(owner:String, repo:String): Flow<Resource<List<ColaboradorDTO>>> = flow {
         try{
             emit(Resource.Loading())
-            val repository = dataSource.getColaborador(owner)
+            val repository = dataSource.getColaborador(owner, repo)
             emit(Resource.Success(repository))
         }catch (e: HttpException){
             val errorMessage = e.response()?.errorBody()?.string() ?: e.message()

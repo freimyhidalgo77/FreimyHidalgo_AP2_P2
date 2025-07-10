@@ -1,6 +1,7 @@
 package edu.ucne.freimyhidalgo_ap2_p2.data.repository
 
 import android.util.Log
+import edu.ucne.freimyhidalgo_ap2_p2.data.remote.dto.ColaboradorDTO
 import edu.ucne.freimyhidalgo_ap2_p2.data.remote.dto.RepositoryDTO
 import edu.ucne.freimyhidalgo_ap2_p2.data.remote.repositorys.RepositoryDataSource
 import edu.ucne.freimyhidalgo_ap2_p2.data.remote.repositorys.Resource
@@ -30,26 +31,18 @@ class RepositoryRepository @Inject constructor(
     }
 
 
-    suspend fun createRepository(
-        repositoryDTO: RepositoryDTO
-    ): Resource<RepositoryDTO> = try {
-        val result = dataSource.postRepository(repositoryDTO)
-        Resource.Success(result)
-    } catch (e: Exception) {
-        Resource.Error(e.message ?: "Error al crear el repositorio")
+    suspend fun getContributors(owner: String, repo: String): Flow<Resource<List<ColaboradorDTO>>> = flow {
+        emit(Resource.Loading())
+        try {
+            val contributors = dataSource.listColaboradores(owner, repo)
+            emit(Resource.Success(contributors))
+        } catch (e: Exception) {
+            emit(Resource.Error("Error al obtener contribuidores: ${e.message}"))
+        }
     }
 
-    suspend fun updateRepository(
-        username: String,
-        repositoryDTO: RepositoryDTO,
-    ): Resource<RepositoryDTO> = try {
-        val result = dataSource.putRepository(username,repositoryDTO)
-        Resource.Success(result)
-    } catch (e: Exception) {
-        Resource.Error(e.message ?: "Error al actualizar el repositorio")
-    }
 
-    suspend fun delete(username:String, repos:String)  = dataSource.deleteRepository(username, repos)
+
 
 
     }

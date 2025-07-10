@@ -13,24 +13,15 @@ import retrofit2.http.Path
 
 interface ColaboradoresManagerApi {
 
-    @GET("repos/{username}/{repo}/collaborators")
-    suspend fun listColab(@Path("collaborators") colaborador: String): List<ColaboradorDTO>
+    @GET("/repos/{owner}/{repo}/contributors")
+    suspend fun listColab(@Path("owner") owner: String, @Path("repo") repo: String): List<ColaboradorDTO>
 
-    @POST("repos/{username}/{repo}/collaborators")
-    suspend fun createColab(
-        @Body request: ColaboradorDTO,
-    ): ColaboradorDTO
+    @GET("repos/{owner}/{repo}/contributors")
+    suspend fun listContributors(
+        @Path("owner") owner: String,
+        @Path("repo") repo: String
+    ): List<ColaboradorDTO>
 
-    @PATCH("repos/{username}/{repo}/collaborators")
-    suspend fun updateColab(
-        @Path("Colaborador") colaborador: String,
-        @Body request: ColaboradorDTO,
-    ): ColaboradorDTO
-
-    @DELETE("repos/{username}/{repo}/collaborators")
-    suspend fun deleteRepo(
-        @Path("Colaborador") colaborador: String,
-    ): Response<Unit>
 
 
 

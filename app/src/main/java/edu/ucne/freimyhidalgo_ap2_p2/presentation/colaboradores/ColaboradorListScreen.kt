@@ -70,7 +70,7 @@ fun ColaboradorListScreen(
     var lastretentionCount by remember { mutableStateOf(0) }
 
     LaunchedEffect(Unit) {
-        viewModel.getColaboradores("enelramon")
+        viewModel.getContributor("")
     }
 
     LaunchedEffect(uiState.colaboradors) {
@@ -85,7 +85,7 @@ fun ColaboradorListScreen(
         drawerState = drawerState,
         scope = scope,
         uiState = uiState,
-        reloadRepository = { viewModel.getColaboradores("enelramon") },
+        reloadRepository = { viewModel.getContributor("enelramon") },
         goToColaborators,
         createRepository,
         viewModel = viewModel
@@ -212,43 +212,19 @@ fun ColaboradorRow(
                             append("Id: ")
                         }
                         withStyle(style = SpanStyle(fontWeight = FontWeight.Normal)) {
-                            append(colaborador.id.toString())
+                            append(colaborador.contributions.toString())
                         }
                     },
                     fontSize = 18.sp,
                     color = MaterialTheme.colorScheme.onSurface
                 )
 
-
-                Text(
-                    text = buildAnnotatedString {
-                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                            append("URL: ")
-                        }
-                        withStyle(style = SpanStyle(fontWeight = FontWeight.Normal)) {
-                            append(colaborador.html_url ?: "No disponible")
-                        }
-                    },
-                    fontSize = 18.sp,
-                    color = MaterialTheme.colorScheme.onSurface
-
-                )
             }
+        }
 
-            Text(
-                text = buildAnnotatedString {
-                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                        append("Avatar: ")
-                    }
-                    withStyle(style = SpanStyle(fontWeight = FontWeight.Normal)) {
-                        append(colaborador.avatar_url ?: "No disponible")
-                    }
-                },
-                fontSize = 18.sp,
-                color = MaterialTheme.colorScheme.onSurface
-            )
+
         }
 
      }
-}
+
 
