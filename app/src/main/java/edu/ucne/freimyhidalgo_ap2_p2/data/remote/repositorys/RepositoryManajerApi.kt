@@ -1,5 +1,6 @@
 package edu.ucne.freimyhidalgo_ap2_p2.data.remote.repositorys
 
+import edu.ucne.freimyhidalgo_ap2_p2.data.remote.dto.ColaboradorDTO
 import edu.ucne.freimyhidalgo_ap2_p2.data.remote.dto.RepositoryDTO
 import retrofit2.Response
 import retrofit2.http.Body
@@ -16,23 +17,11 @@ interface RepositoryManajerApi {
     @GET("users/{username}/repos")
     suspend fun listRepos(@Path("username") username: String): List<RepositoryDTO>
 
-    @POST("users/repos")
-    suspend fun createRepo(
-        @Body request: RepositoryDTO,
-    ): RepositoryDTO
-
-
-    @PATCH("repos/{username}/{repo}")
-    suspend fun updateRepo(
-        @Path("username") username: String,
-        @Body request: RepositoryDTO,
-    ): RepositoryDTO
-
-    @DELETE("repos/{username}/{repo}")
-    suspend fun deleteRepo(
-        @Path("username") username: String,
-        @Path("repo") repo: String,
-    ): Response<Unit>
+    @GET("repos/{owner}/{repo}/contributors")
+    suspend fun listContributors(
+        @Path("owner") owner: String,
+        @Path("repo") repo: String
+    ): List<ColaboradorDTO>
 
 
 }
