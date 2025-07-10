@@ -6,8 +6,9 @@ import edu.ucne.freimyhidalgo_ap2_p2.data.repository.RepositoryRepository
 data class RepositoryUIState(
     val name:String = "",
     val descripcion: String = "",
-    val html_url:String = "", val isLoading: Boolean = false,
-    val repository: List<RepositoryDTO> = emptyList()
+    val html_url:String = "",
+    val isLoading: Boolean = false,
+    val repository: List<RepositoryDTO> = emptyList(),
+    val errorMessage: String? = null,
 
-
-)
+    )
